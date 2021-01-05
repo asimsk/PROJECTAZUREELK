@@ -1,0 +1,122 @@
+######  Azure Resource Group: (Red Team) #######
+
+
+
+Incoming rule: 
+
+| Type              | Port    | Source IP           | Destination IP    |
+|------------------:|:-------:|:-------------------:|:------------------|
+|  MY public IP     |  22      | 40.88.129.224	    |Virtual Network    |
+|  Ssh Jump Box     |  22     |   10.0.0.4	    |Virtual Network    |
+
+
+Outbound rule:	 
+	          
+| Type  		|Private IP   	      |    Public IP               |
+|----------------------:|:-------------------:|:---------------------------|
+|Jump Box VM	        | 10.0.0.4            |    13.90.94.255            |
+| Web -1		| 10.0.0.5	      |    52.147.197.242        |
+| Web -2  		| 10.0.0.6	      |    52.147.197.242          |
+  DVWA-VM2                10.0.0.7
+
+#ssh-keygen (Generate SSH key on Local PC and Copy public key and paste inside the Jump Box ssh password)
+#ssh sysadmin@40.88.129.224 (Access Jump Box and Log in)
+
+    $ sudo apt install docker.io (Docker install on Jump Box)
+    
+    $ sudo systemctl status docker (Docker services)
+   
+    $ sudo systemctl start docker
+   
+$ sudo docker pull cyberxsecurity/ansible (Pull the cyberxsecurity/ansible container inside docker) 
+$ sudo docker run  -ti cyberxsecurity/ansible:latest bash (Launch the ansible container with docker)
+$ sudo docker container list -a      
+$ sudo docker start fervent_albattani (Particular container start inside the docker) 
+     
+$ sudo docker attach fervent_albattani (Attached container with docker) After Prompt will change 
+$ ssh-keygen (it will generate key inside the: /root/.ssh/id_rsa.pub - 
+$ ssh sysadmin@10.0.0.5/6/7 (Conform connection with Web-1/2/3)
+
+Web - 1
+ 
+Web - 2
+
+DVWA-VM2
+ 
+Root# sudo nano /etc/ansible/ansible.cfg 	(Change ansible configure file)
+
+Remote_user = sysadmin
+
+Root# sudo nano /etc/ansible/hosts		(Change Hosts file)
+
+10.0.0.5 ansible_python_interpreter = /usr/bin/python3
+10.0.0.6 ansible_python_interpreter = /usr/bin/python3
+10.0.0.7 ansible_python_interpreter= /usr/bin/python3
+ 
+root#........: cd /etc/ansible/
+root#.... /etc/ansible# ansible all -m ping 	(Verify the ansible configuration file)
+
+root#......:/etc/ansible# nano pentest.yml 		
+ 
+root#....: /etc/ansible# ansible-playbook pentest.yml
+
+sysadmin@DVWA-VM2: $ curl localhost/setup.php
+
+    
+Virtual Machine (Web-1/ Web -2) and IP address (10.0.0.5 / 10.0.0.6)
+	
+I have already made network security rule before, but configuration will be: 
+
+ 
+Project: 
+
+At week 12 homework, I created 4 Virtual machines (1- Jump box, 3 – web server/DVWA).
+
+Installed docker and container(fervent_albattani) on jump-box and DVWA on webserver to test vulnerability at web server.
+
+For project, I built the one more virtual machine on different region (US West) for ELK
+
+VM Name: 	ELK Server1 – IP: 10.2.0.4 and Public IP: http://104.42.251.234:5601/app/kibana#/.
+Create Virtual network connection between both region (US-East and US-West)
+
+Check the connection from elacted_blackwell container to new ELK server.
+
+ssh sysadmin@10.2.0.4
+   
+Edit the hosts file under jumpbox, elated_blackwell container (/etc/ansible/hosts)
+    
+    [ELKSERVERS}
+
+	10.2.0.4 ansible_python_interpreter=/usr/bin/python3
+ 
+
+5.After configured hosts file, I can run the play book and install packages
+
+Build the play book to install packages for ELK server.
+ 	
+   
+6.Add ssh access in network security group at ELKServer1NSG
+	
+    SSH	-	22	-	Any – Any
+	
+    ELK-Http	5601	-	any-any
+    
+Now check the Kibana is working form browser or not
+
+ Before browser, I can check it in elkserver: 
+ 
+After run the kibana, I will install filebeat and metricbeat inside the files folder in ansible.
+
+Fielbeat helps generate and organize log files to send to Logstash and Elasticsearch. It log information about the file system, including which files have changed and when.
+ 
+Run the Filebeat configuration file templete on ansible container.
+
+After install the filebeat configuration file inside the /etc/ansibe/files/filebeat-config.yml
+ 
+Edit the filebeat-config.yml  for replace the ip address on elk machine(Ctrl+Shift+ -_ 1106 and 1806)
+
+Line 1806 and replace the IP address at ELK Machine
+ 
+Now I create the filebeat installation playbook on /etc/ansible/roles/
+ 
+Create filebeat-playbook (filebeat-playbook.yml)
